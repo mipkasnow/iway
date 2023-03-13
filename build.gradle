@@ -1,0 +1,58 @@
+plugins {
+    id 'java-library'
+    id "io.qameta.allure" version "2.10.0"
+    id "io.freefair.lombok" version "6.0.0-m2"
+}
+
+repositories {
+    mavenCentral()
+}
+
+def selenideAppiumVersion = "2.3.1",
+    junitVersion = "5.9.0",
+    slf4jVersion = '2.0.3',
+    assertJVersion = "3.23.1",
+    allureVersion = "2.20.0"
+
+allure
+        {
+            report {
+                version.set(allureVersion)
+            }
+            adapter {
+                autoconfigure.set(true)
+                aspectjWeaver.set(true)
+                frameworks {
+                    junit5 {
+                        adapterVersion.set(allureVersion)
+                    }
+                }
+            }
+        }
+
+dependencies {
+    implementation(
+            "com.codeborne:selenide-appium:$selenideAppiumVersion",
+            "org.assertj:assertj-core:$assertJVersion",
+            "org.junit.jupiter:junit-jupiter:$junitVersion",
+            "org.slf4j:slf4j-simple:$slf4jVersion",
+            "io.qameta.allure:allure-selenide:$allureVersion",
+    )
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test) {
+    systemProperties(System.getProperties())
+    useJUnitPlatform()
+
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED"
+    }
+}
